@@ -1,86 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>RosyTalk</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>RosyTalk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: #e5e7eb;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-.container {
-  background: #020617;
-  padding: 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-}
-h1 {
-  text-align: center;
-}
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: none;
-}
-input {
-  background: #020617;
-  color: #e5e7eb;
-  border: 1px solid #334155;
-}
-button {
-  background: #2563eb;
-  color: white;
-  font-weight: bold;
-}
-#response {
-  margin-top: 15px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-<script>
-const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/";
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
 
-async function sendMessage() {
-  const inputEl = document.getElementById("userInput");
-  const responseEl = document.getElementById("response");
-  const message = inputEl.value.trim();
+    .container {
+      background: #020617;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-  if (!message) return;
+    h1 {
+      text-align: center;
+      margin: 0 0 10px 0;
+    }
 
-  responseEl.innerHTML += `<div class="user">${message}</div>`;
-  inputEl.value = "";
+    #response {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
 
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
-    });
+    .user {
+      align-self: flex-end;
+      background: #2563eb;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 14px 14px 0 14px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
 
-    const data = await res.json();
+    .bot {
+      align-self: flex-start;
+      background: #020617;
+      border: 1px solid #334155;
+      color: #e5e7eb;
+      padding: 10px 14px;
+      border-radius: 14px 14px 14px 0;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
 
-    responseEl.innerHTML += `<div class="bot">${data.reply}</div>`;
-    responseEl.scrollTop = responseEl.scrollHeight;
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #e5e7eb;
+      outline: none;
+    }
 
-  } catch (err) {
-    responseEl.innerHTML += `<div class="bot">❌ Error</div>`;
-  }
-}
+    button {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-function handleEnter(e) {
-  if (e.key === "Enter") sendMessage();
-}
-</script>
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>RosyTalk</h1>
+
+    <div id="response"></div>
+
+    <input
+      id="userInput"
+      placeholder="Type something..."
+      onkeydown="handleEnter(event)"
+    >
+
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/";
+
+    async function sendMessage() {
+      const inputEl = document.getElementById("userInput");
+      const responseEl = document.getElementById("response");
+      const message = inputEl.value.trim();
+
+      if (!message) return;
+
+      // عرض رسالة المستخدم
+      responseEl.innerHTML += `<div class="user">${message}</div>`;
+      inputEl.value = "";
+      responseEl.scrollTop = responseEl.scrollHeight;
+
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+
+        responseEl.innerHTML += `<div class="bot">${data.reply}</div>`;
+        responseEl.scrollTop = responseEl.scrollHeight;
+
+      } catch (err) {
+        responseEl.innerHTML += `<div class="bot">⚠️ Error contacting AI</div>`;
+      }
+    }
+
+    function handleEnter(e) {
+      if (e.key === "Enter") sendMessage();
+    }
+  </script>
 </body>
 </html>
