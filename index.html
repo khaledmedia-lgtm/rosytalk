@@ -104,38 +104,9 @@
   </div>
 
   <script>
-const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/";
-window.onload = () => {
+function sendMessage() {
   const responseEl = document.getElementById("response");
-  responseEl.innerHTML += `<div class="bot">👋 أهلًا! أنا RosyTalk، اسألني أي شي.</div>`;
-};
-async function sendMessage() {
-  const inputEl = document.getElementById("userInput");
-  const responseEl = document.getElementById("response");
-  const message = inputEl.value.trim();
-  if (!message) return;
-
-  responseEl.innerHTML += `<div class="bot">${data.reply || "🤖 جاهز أجاوبك!"}</div>`;
-
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
-    });
-
-    const data = await res.json();
-
-    responseEl.innerHTML += `<div class="bot">${data.reply}</div>`;
-    responseEl.scrollTop = responseEl.scrollHeight;
-
-  } catch (err) {
-    responseEl.innerHTML += `<div class="bot">⚠️ Error contacting AI</div>`;
-  }
-}
-
-function handleEnter(e) {
-  if (e.key === "Enter") sendMessage();
+  responseEl.innerHTML += `<div class="bot">✅ الزر شغّال</div>`;
 }
   </script>
 </body>
