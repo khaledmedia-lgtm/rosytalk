@@ -112,9 +112,7 @@
 
       if (!message) return;
 
-      // عرض رسالة المستخدم
-      responseEl.innerHTML += `<div class="user">${message}</div>`;
-      inputEl.value = "";
+      responseEl.innerHTML += `<div class="bot">${data.text}</div>`;
       responseEl.scrollTop = responseEl.scrollHeight;
 
       try {
