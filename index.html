@@ -1,77 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RosyTalk</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: #020617;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 420px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.4);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-    }
-    input {
-      background: #020617;
-      color: #e5e7eb;
-      border: 1px solid #334155;
-    }
-    button {
-      background: #2563eb;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #response {
-      margin-top: 15px;
-      max-height: 260px;
-      overflow-y: auto;
-      font-size: 15px;
-    }
-    .you { color: #93c5fd; margin: 4px 0; }
-    .bot { color: #a7f3d0; margin: 4px 0; }
-  </style>
-</head>
-<body>
+<meta charset="UTF-8">
+<title>RosyTalk</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.container {
+  background: #020617;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+}
+h1 {
+  text-align: center;
+}
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+}
+input {
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+button {
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+}
+#response {
+  margin-top: 15px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+</style>
+</head>
+
+<body>
 <div class="container">
   <h1>RosyTalk</h1>
-
-  <input id="userInput" placeholder="Type something..."
-         onkeydown="handleEnter(event)" />
-
+  <input id="userInput" placeholder="Type something..." onkeydown="handleEnter(event)">
   <button onclick="sendMessage()">Send</button>
-
   <div id="response"></div>
 </div>
 
 <script>
-function handleEnter(e) {
-  if (e.key === "Enter") {
+function handleEnter(event) {
+  if (event.key === "Enter") {
     sendMessage();
   }
 }
@@ -97,7 +87,7 @@ function sendMessage() {
   } else {
     var randomReplies = [
       "I’m listening… tell me more 😊",
-      "Interesting 🤔 go on…",
+      "Interesting 🤔 go on...",
       "Tell me more about that 👂",
       "I see 👀 what do you mean?"
     ];
@@ -105,9 +95,11 @@ function sendMessage() {
   }
 
   var box = document.getElementById("response");
-  box.innerHTML +=
-    "<div class='you'>👤 You: " + input + "</div>" +
-    "<div class='bot'>🤖 RosyTalk: " + reply + "</div>";
+  box.innerHTML += "<div>👤 You: " + input + "</div>";
+  box.innerHTML += "<div>🤖 RosyTalk: " + reply + "</div>";
 
   inputField.value = "";
-  box.scroll
+}
+</script>
+</body>
+</html>
