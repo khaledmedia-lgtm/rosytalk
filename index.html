@@ -103,38 +103,37 @@
   </div>
 
   <script>
-  const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/";
+const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/";
 
-  async function sendMessage() {
-    const inputEl = document.getElementById("userInput");
-    const responseEl = document.getElementById("response");
-    const message = inputEl.value.trim();
+async function sendMessage() {
+  const inputEl = document.getElementById("userInput");
+  const responseEl = document.getElementById("response");
+  const message = inputEl.value.trim();
+  if (!message) return;
 
-    if (!message) return;
+  responseEl.innerHTML += `<div class="user">${message}</div>`;
+  inputEl.value = "";
 
-    responseEl.innerHTML += `<div class="user">${message}</div>`;
-    inputEl.value = "";
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
 
-    try {
-      const res = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-      });
+    const data = await res.json();
 
-      const data = await res.json();
+    responseEl.innerHTML += `<div class="bot">${data.reply}</div>`;
+    responseEl.scrollTop = responseEl.scrollHeight;
 
-      responseEl.innerHTML += `<div class="bot">${data.reply}</div>`;
-      responseEl.scrollTop = responseEl.scrollHeight;
-
-    } catch (err) {
-      responseEl.innerHTML += `<div class="bot">⚠️ Error contacting AI</div>`;
-    }
+  } catch (err) {
+    responseEl.innerHTML += `<div class="bot">⚠️ Error contacting AI</div>`;
   }
+}
 
-  function handleEnter(e) {
-    if (e.key === "Enter") sendMessage();
-  }
+function handleEnter(e) {
+  if (e.key === "Enter") sendMessage();
+}
   </script>
 </body>
 </html>
