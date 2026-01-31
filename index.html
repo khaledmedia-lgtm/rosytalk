@@ -48,30 +48,18 @@ button {
   max-height: 200px;
   overflow-y: auto;
 }
-</style>
-</head>
-
-<body>
-<div class="container">
-  <h1>RosyTalk</h1>
-  <input id="userInput" placeholder="Type something..." onkeydown="handleEnter(event)">
-  <button onclick="sendMessage()">Send</button>
-  <div id="response"></div>
-</div>
-
 <script>
-<script>
-const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev";
+const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/";
 
 async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const responseBox = document.getElementById("response");
+  const inputEl = document.getElementById("userInput");
+  const responseEl = document.getElementById("response");
+  const message = inputEl.value.trim();
 
-  const message = input.value.trim();
   if (!message) return;
 
-  responseBox.innerHTML += `<div><b>You:</b> ${message}</div>`;
-  input.value = "";
+  responseEl.innerHTML += `<div class="user">${message}</div>`;
+  inputEl.value = "";
 
   try {
     const res = await fetch(WORKER_URL, {
@@ -82,19 +70,17 @@ async function sendMessage() {
 
     const data = await res.json();
 
-    responseBox.innerHTML += `<div><b>RosyTalk:</b> ${data.reply}</div>`;
-    responseBox.scrollTop = responseBox.scrollHeight;
+    responseEl.innerHTML += `<div class="bot">${data.reply}</div>`;
+    responseEl.scrollTop = responseEl.scrollHeight;
 
-  } catch (e) {
-    responseBox.innerHTML += `<div style="color:red">Error connecting to AI</div>`;
+  } catch (err) {
+    responseEl.innerHTML += `<div class="bot">❌ Error</div>`;
   }
 }
 
 function handleEnter(e) {
-  if (e.key === "Enter") {
-    sendMessage();
-  }
+  if (e.key === "Enter") sendMessage();
 }
-  </script>
+</script>>
 </body>
 </html>
