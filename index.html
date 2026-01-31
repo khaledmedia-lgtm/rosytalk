@@ -60,46 +60,41 @@ button {
 </div>
 
 <script>
-function handleEnter(event) {
-  if (event.key === "Enter") {
+<script>
+const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev";
+
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const responseBox = document.getElementById("response");
+
+  const message = input.value.trim();
+  if (!message) return;
+
+  responseBox.innerHTML += `<div><b>You:</b> ${message}</div>`;
+  input.value = "";
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+
+    const data = await res.json();
+
+    responseBox.innerHTML += `<div><b>RosyTalk:</b> ${data.reply}</div>`;
+    responseBox.scrollTop = responseBox.scrollHeight;
+
+  } catch (e) {
+    responseBox.innerHTML += `<div style="color:red">Error connecting to AI</div>`;
+  }
+}
+
+function handleEnter(e) {
+  if (e.key === "Enter") {
     sendMessage();
   }
 }
-
-function sendMessage() {
-  var inputField = document.getElementById("userInput");
-  var input = inputField.value.trim();
-  if (input === "") return;
-
-  var text = input.toLowerCase();
-  var reply = "";
-
-  if (text.includes("hello") || text.includes("hi")) {
-    reply = "Hello 👋 How can I help you?";
-  } else if (
-    text.includes("how are you") ||
-    text.includes("how you doing") ||
-    text.includes("how r you")
-  ) {
-    reply = "I’m doing great 😄 Thanks for asking!";
-  } else if (text.includes("name")) {
-    reply = "My name is RosyTalk 🤖";
-  } else {
-    var randomReplies = [
-      "I’m listening… tell me more 😊",
-      "Interesting 🤔 go on...",
-      "Tell me more about that 👂",
-      "I see 👀 what do you mean?"
-    ];
-    reply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
-  }
-
-  var box = document.getElementById("response");
-  box.innerHTML += "<div>👤 You: " + input + "</div>";
-  box.innerHTML += "<div>🤖 RosyTalk: " + reply + "</div>";
-
-  inputField.value = "";
-}
-</script>
+  </script>
 </body>
 </html>
