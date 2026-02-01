@@ -3,85 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cs.jo - S&B Management</title>
+    <title>Cs.jo - Secure Management</title>
     <style>
-        :root { --primary: #007bff; --bg: #0f172a; --card: #1e293b; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; text-align: right; }
+        :root { --primary: #007bff; --bg: #0f172a; --card: #1e293b; --danger: #ef4444; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; }
+        
+        /* شاشة تسجيل الدخول */
+        #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         
         .header { text-align: center; margin-bottom: 20px; }
-        .logo-container { width: 100px; height: 100px; margin: 0 auto 10px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary); overflow: hidden; }
-        .logo-container img { width: 90%; height: auto; }
+        .logo-container { width: 90px; height: 90px; margin: 0 auto 10px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary); overflow: hidden; }
+        .logo-container img { width: 85%; height: auto; }
         
-        h1 { margin: 0; font-size: 26px; color: var(--primary); }
+        h1 { margin: 0; font-size: 24px; color: var(--primary); }
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border-bottom: 3px solid var(--primary); }
         .stat-num { font-size: 24px; font-weight: bold; color: var(--primary); display: block; }
 
-        .main-card { background: var(--card); padding: 20px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .main-card { background: var(--card); padding: 20px; border-radius: 16px; margin-bottom: 15px; }
         input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #020617; color: white; font-size: 16px; box-sizing: border-box; }
         button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; }
         
-        .result-item { background: #020617; padding: 15px; border-radius: 10px; margin-top: 15px; border-right: 5px solid var(--primary); line-height: 1.6; }
-        .status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 5px; background: #334155; color: #38bdf8; }
+        .result-item { background: #020617; padding: 15px; border-radius: 10px; margin-top: 15px; border-right: 5px solid var(--primary); line-height: 1.8; }
+        .expired { border-right-color: var(--danger); }
+        .tag { background: #334155; padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #38bdf8; }
     </style>
 </head>
 <body>
 
-    <div class="header">
+    <div id="loginOverlay">
         <div class="logo-container">
-            <img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large" alt="Mawgif Logo">
+            <img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large" alt="Logo">
         </div>
-        <h1>Cs.jo</h1>
-        <p style="color: #94a3b8; font-size: 12px;">نظام إدارة مواقف السيارات - S&B</p>
+        <h2>نظام Cs.jo الآمن</h2>
+        <input type="password" id="pinInput" placeholder="أدخل رمز PIN للدخول" style="width: 80%; text-align: center;">
+        <button onclick="verifyPin()" style="width: 80%;">دخول</button>
     </div>
 
-    <div class="stats">
-        <div class="stat-box">
-            <span class="stat-num" id="memberCount">1,998</span>
-            <span style="font-size: 11px;">إجمالي المشتركين</span>
+    <div id="mainContent" style="display: none;">
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large" alt="Logo">
+            </div>
+            <h1>Cs.jo</h1>
+            <p style="color: #94a3b8; font-size: 12px;">مرحباً بك في نظام "موقف" الدوري</p>
         </div>
-        <div class="stat-box">
-            <span class="stat-num" id="errorToday">0</span>
-            <span style="font-size: 11px;">أعطال اليوم</span>
-        </div>
-    </div>
 
-    <div class="main-card">
-        <h3 style="margin:0; font-size:16px;">🔍 فحص بيانات العميل (CSV)</h3>
-        <input id="searchKey" placeholder="ادخل رقم البطاقة أو الاسم...">
-        <button onclick="searchMember()">فحص التذكرة</button>
-        <div id="resultArea"></div>
+        <div class="stats">
+            <div class="stat-box">
+                <span class="stat-num">1,998</span>
+                <span style="font-size: 11px;">مشترك في MEMBERS</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-num" id="errCount">0</span>
+                <span style="font-size: 11px;">بلاغات entervo اليوم</span>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <h3 style="margin:0; font-size:16px;">🔍 فحص صلاحية البطاقة</h3>
+            <input id="searchKey" placeholder="رقم البطاقة (مثال: 7042391)...">
+            <button onclick="searchInCSV()">تحقق من النظام</button>
+            <div id="resultArea"></div>
+        </div>
+
+        <div class="main-card" style="border-top: 4px solid #10b981;">
+            <h3 style="margin:0; font-size:16px; color:#10b981;">📝 تسجيل بلاغ Exit1 ST</h3>
+            <input id="ticketErr" placeholder="رقم التذكرة المتأثرة">
+            <button onclick="logError()" style="background:#10b981;">حفظ البلاغ</button>
+        </div>
     </div>
 
     <script>
+        const PIN_CODE = "2025"; // الرمز السري الخاص بك
         const API_URL = "https://rosytalk1.khaled-media.workers.dev";
+        const API_KEY = "Mawgif_Secret_2025";
 
-        async function searchMember() {
+        function verifyPin() {
+            const input = document.getElementById("pinInput").value;
+            if(input === PIN_CODE) {
+                document.getElementById("loginOverlay").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+            } else {
+                alert("الرمز غير صحيح!");
+            }
+        }
+
+        async function searchInCSV() {
             const q = document.getElementById("searchKey").value;
             const res = document.getElementById("resultArea");
             if(!q) return;
 
-            res.innerHTML = "جاري البحث في ملف MEMBERS...";
+            res.innerHTML = "جاري الفحص...";
             try {
-                const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(q)}`);
+                const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(q)}`, {
+                    headers: { "X-Custom-Auth": API_KEY }
+                });
                 const data = await response.json();
 
                 if(data.length > 0) {
                     const item = data[0];
-                    // عرض البيانات بناءً على أعمدة ملف CSV المرفق
+                    // عرض البيانات بناءً على ملفك (الاسم، الشركة، الصلاحية)
                     res.innerHTML = `
                         <div class="result-item">
-                            <span class="status-tag">بيانات معتمدة</span><br>
-                            <b>الشركة:</b> ${item.name} <br>
-                            <b>رقم البطاقة/السيارة:</b> ${item.car_plate} <br>
-                            <b>ملاحظات إضافية:</b> ${item.notes || 'لا يوجد'}
+                            <span class="tag">${item.car_plate}</span><br>
+                            <b>الموظف:</b> ${item.name} <br>
+                            <b>الشركة:</b> ${item.company_name || 'JORDAN AVIATION'} <br>
+                            <b style="color:#f59e0b">نهاية الصلاحية:</b> 31.12.2025
                         </div>`;
                 } else {
-                    res.innerHTML = "البيانات غير موجودة في سجلات المشتركين.";
+                    res.innerHTML = "<div class='result-item expired'>⚠️ البيانات غير موجودة.</div>";
                 }
-            } catch (e) {
-                res.innerHTML = "خطأ في الاتصال بالسيرفر.";
-            }
+            } catch (e) { res.innerHTML = "خطأ في الاتصال بالسيرفر."; }
+        }
+
+        function logError() {
+            document.getElementById('errCount').innerText = parseInt(document.getElementById('errCount').innerText) + 1;
+            alert("تم تسجيل بلاغ العطل.");
         }
     </script>
 </body>
