@@ -1,39 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>RosyTalk</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>نظام العملاء</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+    body { font-family: sans-serif; background: #0f172a; color: white; padding: 20px; }
+    .container { max-width: 400px; margin: auto; }
+    input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #020617; color: white; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
+    .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-top: 20px; border-right: 5px solid #2563eb; }
+    .card p { margin: 8px 0; font-size: 14px; }
+    .label { color: #94a3b8; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>🔍 بحث سريع</h3>
+    <input id="searchInput" placeholder="اسم، رقم سيارة، أو شركة...">
+    <button onclick="doSearch()">ابحث الآن</button>
 
-    .container {
-      background: #020617;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    <div id="resultArea"></div>
+  </div>
 
-    h1 {
-      text-align: center;
-      margin: 0 0 10px 0;
-    }
+  <script>
+    async function doSearch() {
+      const q = document.getElementById("searchInput").value;
+      const resArea = document.getElementById("resultArea");
+      resArea.innerHTML = "جاري البحث...";
 
-    #response {
+      try {
+        const response = await fetch(`https://your-worker-url.workers.dev/search?q=${q}`);
+        const data = await response.json();
+
+        if (data.length > 0) {
+          const c = data[0];
+          resArea.innerHTML = `
+            <div class="card">
+              <p><span class="label">العميل:</span> ${c.name}</p>
+              <p><span class="label">السيارة:</span> ${c.car_plate}</p>
+              <p><span class="label">الشركة:</span> ${c.company_name}</p>
+              <p><span class="label">ملاحظات:</span> ${c.notes || 'لا يوجد'}</p>
+            </div>
+          `;
+        } else {
+          resArea.innerHTML = "<p>لم يتم العثور على العميل</p>";
+        }
+      } catch (e) {
+        resArea.innerHTML = "<p>خطأ في الاتصال بالسيرفر</p>";
+      }
+    }
+  </script>
+</body>
+</html>
       display: flex;
       flex-direction: column;
       gap: 10px;
