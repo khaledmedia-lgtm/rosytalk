@@ -1,208 +1,88 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>RosyTalk CRM</title>
-  
-  <style>
-    /* تنسيق الجسم الأساسي */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cs.jo - S&B Management</title>
+    <style>
+        :root { --primary: #007bff; --bg: #0f172a; --card: #1e293b; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; text-align: right; }
+        
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo-container { width: 100px; height: 100px; margin: 0 auto 10px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary); overflow: hidden; }
+        .logo-container img { width: 90%; height: auto; }
+        
+        h1 { margin: 0; font-size: 26px; color: var(--primary); }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border-bottom: 3px solid var(--primary); }
+        .stat-num { font-size: 24px; font-weight: bold; color: var(--primary); display: block; }
 
-    .container {
-      background: #020617;
-      padding: 20px;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      border: 1px solid #1e293b;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    }
-
-    h1 {
-      text-align: center;
-      margin: 0;
-      font-size: 24px;
-      color: #38bdf8;
-    }
-
-    /* منطقة النتائج والرسائل */
-    #responseArea {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-
-    /* بطاقة عرض بيانات العميل */
-    .bot-card {
-      align-self: flex-start;
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #e5e7eb;
-      padding: 15px;
-      border-radius: 14px 14px 14px 0;
-      width: 90%;
-      word-wrap: break-word;
-      line-height: 1.6;
-    }
-
-    .label {
-      color: #94a3b8;
-      font-size: 12px;
-      display: block;
-      margin-top: 5px;
-    }
-
-    .value {
-      font-weight: bold;
-      color: #f8fafc;
-    }
-
-    /* المدخلات */
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    input, textarea {
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: #e5e7eb;
-      outline: none;
-      font-size: 16px; /* لمنع الزووم في الآيفون */
-    }
-
-    input:focus {
-      border-color: #2563eb;
-    }
-
-    /* الأزرار */
-    button {
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, #2563eb, #4f46e5);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:active {
-      transform: scale(0.98);
-      opacity: 0.9;
-    }
-
-    .btn-add {
-      background: linear-gradient(135deg, #10b981, #059669);
-      margin-top: 10px;
-    }
-
-    hr {
-      border: 0;
-      border-top: 1px solid #334155;
-      margin: 10px 0;
-    }
-  </style>
+        .main-card { background: var(--card); padding: 20px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #020617; color: white; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; }
+        
+        .result-item { background: #020617; padding: 15px; border-radius: 10px; margin-top: 15px; border-right: 5px solid var(--primary); line-height: 1.6; }
+        .status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 5px; background: #334155; color: #38bdf8; }
+    </style>
 </head>
-
 <body>
-  <div class="container">
-    <h1>RosyTalk 🔍</h1>
 
-    <div class="input-group">
-      <input id="searchInput" placeholder="ابحث بالاسم، رقم السيارة..." onkeydown="if(event.key==='Enter') doSearch()">
-      <button onclick="doSearch()">ابحث الآن</button>
+    <div class="header">
+        <div class="logo-container">
+            <img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large" alt="Mawgif Logo">
+        </div>
+        <h1>Cs.jo</h1>
+        <p style="color: #94a3b8; font-size: 12px;">نظام إدارة مواقف السيارات - S&B</p>
     </div>
 
-    <div id="responseArea">
-      </div>
-
-    <hr>
-
-    <div class="input-group">
-      <h3 style="margin:0; font-size:16px; color:#10b981;">➕ إضافة جديد</h3>
-      <input id="newName" placeholder="اسم العميل">
-      <input id="newCar" placeholder="رقم السيارة">
-      <button class="btn-add" onclick="addCustomer()">حفظ في القاعدة</button>
+    <div class="stats">
+        <div class="stat-box">
+            <span class="stat-num" id="memberCount">1,998</span>
+            <span style="font-size: 11px;">إجمالي المشتركين</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-num" id="errorToday">0</span>
+            <span style="font-size: 11px;">أعطال اليوم</span>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // --- ملاحظة: ضع رابط الـ Worker الخاص بك هنا ---
-    const WORKER_URL = "https://your-worker-url.workers.dev";
+    <div class="main-card">
+        <h3 style="margin:0; font-size:16px;">🔍 فحص بيانات العميل (CSV)</h3>
+        <input id="searchKey" placeholder="ادخل رقم البطاقة أو الاسم...">
+        <button onclick="searchMember()">فحص التذكرة</button>
+        <div id="resultArea"></div>
+    </div>
 
-    async function doSearch() {
-      const q = document.getElementById("searchInput").value;
-      const resArea = document.getElementById("responseArea");
-      
-      if (!q) return;
-      resArea.innerHTML = '<div style="text-align:center">جاري البحث...</div>';
+    <script>
+        const API_URL = "https://rosytalk1.khaled-media.workers.dev";
 
-      try {
-        const response = await fetch(`${WORKER_URL}/search?q=${encodeURIComponent(q)}`);
-        const data = await response.json();
+        async function searchMember() {
+            const q = document.getElementById("searchKey").value;
+            const res = document.getElementById("resultArea");
+            if(!q) return;
 
-        if (data && data.length > 0) {
-          const c = data[0];
-          resArea.innerHTML = `
-            <div class="bot-card">
-              <span class="label">الاسم:</span> <div class="value">${c.name}</div>
-              <span class="label">رقم السيارة:</span> <div class="value">${c.car_plate || 'غير مسجل'}</div>
-              <span class="label">الشركة:</span> <div class="value">${c.company_name || 'غير مسجل'}</div>
-              <span class="label">ملاحظات:</span> <div class="value">${c.notes || '-'}</div>
-            </div>
-          `;
-        } else {
-          resArea.innerHTML = '<div style="text-align:center">❌ لا توجد نتائج</div>';
+            res.innerHTML = "جاري البحث في ملف MEMBERS...";
+            try {
+                const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(q)}`);
+                const data = await response.json();
+
+                if(data.length > 0) {
+                    const item = data[0];
+                    // عرض البيانات بناءً على أعمدة ملف CSV المرفق
+                    res.innerHTML = `
+                        <div class="result-item">
+                            <span class="status-tag">بيانات معتمدة</span><br>
+                            <b>الشركة:</b> ${item.name} <br>
+                            <b>رقم البطاقة/السيارة:</b> ${item.car_plate} <br>
+                            <b>ملاحظات إضافية:</b> ${item.notes || 'لا يوجد'}
+                        </div>`;
+                } else {
+                    res.innerHTML = "البيانات غير موجودة في سجلات المشتركين.";
+                }
+            } catch (e) {
+                res.innerHTML = "خطأ في الاتصال بالسيرفر.";
+            }
         }
-      } catch (e) {
-        resArea.innerHTML = '<div style="text-align:center; color:#ef4444;">⚠️ خطأ في الاتصال بالسيرفر</div>';
-      }
-    }
-
-    async function addCustomer() {
-      const name = document.getElementById("newName").value;
-      const car = document.getElementById("newCar").value;
-
-      if (!name) { alert("يرجى كتابة الاسم"); return; }
-
-      try {
-        const response = await fetch(`${WORKER_URL}/add`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name, car_plate: car, notes: "تمت الإضافة من الجوال" })
-        });
-
-        if (response.ok) {
-          alert("✅ تم الحفظ!");
-          document.getElementById("newName").value = "";
-          document.getElementById("newCar").value = "";
-        }
-      } catch (e) {
-        alert("❌ فشل الحفظ");
-      }
-    }
-  </script>
+    </script>
 </body>
 </html>
