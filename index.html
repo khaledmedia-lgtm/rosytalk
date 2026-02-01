@@ -107,6 +107,31 @@
 function sendMessage() {
   const responseEl = document.getElementById("response");
   responseEl.innerHTML += `<div class="bot">✅ الزر شغّال</div>`;
+function sendMessage() {
+  const input = document.getElementById("userInput");
+  const responseEl = document.getElementById("response");
+
+  if (input.value.trim() === "") return; // لمنع إرسال رسائل فارغة
+
+  // 1. إضافة رسالة المستخدم
+  responseEl.innerHTML += `<div class="user">${input.value}</div>`;
+
+  // 2. رد تجريبي من النظام (لاحقاً سنربطه بقاعدة البيانات)
+  setTimeout(() => {
+    responseEl.innerHTML += `<div class="bot">جاري البحث عن العميل: ${input.value}...</div>`;
+    responseEl.scrollTop = responseEl.scrollHeight; // للنزول لآخر رسالة تلقائياً
+  }, 500);
+
+  input.value = ""; // مسح الخانة بعد الإرسال
+}
+
+// دالة لتشغيل الإرسال عند الضغط على Enter
+function handleEnter(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+}
+
 }
   </script>
 </body>
