@@ -3,84 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cs.jo - S&B Portal</title>
+    <title>Cs.jo Portal</title>
     <style>
-        :root { --blue: #007bff; --dark: #0f172a; --card: #1e293b; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--dark); color: white; margin: 0; padding: 15px; }
-        #loginScreen { position: fixed; inset: 0; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
-        .logo { width: 80px; height: 80px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border: 3px solid var(--blue); }
-        .container { max-width: 450px; margin: auto; display: none; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--blue); }
-        .main-box { background: var(--card); padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #020617; color: white; font-size: 16px; box-sizing: border-box; text-align: center; }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--blue); color: white; font-weight: bold; cursor: pointer; }
-        .result-card { background: #020617; padding: 15px; border-radius: 10px; margin-top: 15px; border-right: 5px solid var(--blue); line-height: 1.8; }
+        :root { --blue: #007bff; --bg: #0f172a; --card: #1e293b; }
+        body { font-family: sans-serif; background: var(--bg); color: white; padding: 15px; text-align: center; }
+        .main-card { background: var(--card); padding: 20px; border-radius: 20px; max-width: 400px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #334155; background: #020617; color: white; font-size: 18px; box-sizing: border-box; text-align: center; }
+        button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--blue); color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:active { transform: scale(0.98); opacity: 0.8; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 12px; background: #020617; border-right: 5px solid var(--blue); display: none; text-align: right; }
+        .status { font-size: 12px; color: #64748b; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen">
-        <div class="logo"><img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large" width="70"></div>
-        <h2 style="color: var(--blue);">Cs.jo Access</h2>
-        <input type="password" id="pin" placeholder="رمز PIN" style="width: 200px;">
-        <button onclick="auth()" style="width: 200px;">دخول</button>
-    </div>
+    <div class="main-card">
+        <h2 style="color: var(--blue);">Cs.jo Management</h2>
+        <p>فحص صلاحية المشتركين</p>
+        
+        <input type="text" id="cardInput" placeholder="أدخل رقم البطاقة (مثلاً 7042391)">
+        <button onclick="checkCard()">فحص الآن</button>
 
-    <div id="app" class="container">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h1>Cs.jo</h1>
-            <small style="color: #94a3b8;">S&B Customer Service Management</small>
-        </div>
-
-        <div class="stat-grid">
-            <div class="stat-card"><h3>1,998</h3><small>المشتركين</small></div>
-            <div class="stat-card"><h3>0</h3><small>البلاغات</small></div>
-        </div>
-
-        <div class="main-box">
-            <h3>🔍 فحص البطاقة (MEMBERS)</h3>
-            <input id="searchKey" placeholder="ادخل رقم البطاقة...">
-            <button onclick="search()">فحص الصلاحية</button>
-            <div id="resultArea"></div>
-        </div>
+        <div id="res" class="result"></div>
+        <div id="debug" class="status">الحالة: جاهز</div>
     </div>
 
     <script>
-        const API_URL = "https://rosytalk1.khaled-media.workers.dev/search";
-        const KEY = "Mawgif_Secret_2025";
+        // الرابط الخاص بك - تأكد منه 100%
+        const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/search";
+        const SECRET_KEY = "Mawgif_Secret_2025";
 
-        function auth() {
-            if(document.getElementById('pin').value === '2025') {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-            } else { alert('خطأ!'); }
-        }
+        async function checkCard() {
+            const card = document.getElementById('cardInput').value;
+            const resDiv = document.getElementById('res');
+            const debug = document.getElementById('debug');
 
-        async function search() {
-            const q = document.getElementById('searchKey').value;
-            const res = document.getElementById('resultArea');
-            if(!q) return;
-            res.innerHTML = "جاري الاتصال...";
+            if(!card) { alert("يرجى إدخال رقم"); return; }
+
+            resDiv.style.display = 'none';
+            debug.innerText = "جاري الاتصال بالسيرفر...";
 
             try {
-                const response = await fetch(`${API_URL}?q=${q}`, {
-                    headers: { "X-Custom-Auth": KEY }
+                const url = `${WORKER_URL}?q=${card}`;
+                console.log("Requesting:", url);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Custom-Auth': SECRET_KEY,
+                        'Content-Type': 'application/json'
+                    }
                 });
+
+                debug.innerText = `استجابة السيرفر: ${response.status}`;
+
+                if (!response.ok) throw new Error(`سيرفر Cloudflare أعطى خطأ ${response.status}`);
+
                 const data = await response.json();
+
                 if(data && data.length > 0) {
-                    const i = data[0];
-                    res.innerHTML = `
-                        <div class="result-card">
-                            <b>الاسم:</b> ${i.first_name} ${i.last_name}<br>
-                            <b>الشركة:</b> ${i.name}<br>
-                            <b>البطاقة:</b> ${i.car_plate}<br>
-                            <b style="color:#f59e0b">ينتهي في:</b> ${i.expiry_date}
-                        </div>`;
-                } else { res.innerHTML = "⚠️ السجل غير موجود."; }
-            } catch(e) { 
-                res.innerHTML = "❌ خطأ في الاتصال بالسيرفر.";
-                console.error(e);
+                    const person = data[0];
+                    resDiv.innerHTML = `
+                        <b style="color:var(--blue)">✅ البيانات موجودة:</b><br>
+                        <b>الاسم:</b> ${person.first_name} ${person.last_name}<br>
+                        <b>الشركة:</b> ${person.name}<br>
+                        <b>رقم البطاقة:</b> ${person.car_plate}<br>
+                        <b>تاريخ الانتهاء:</b> ${person.expiry_date}
+                    `;
+                    resDiv.style.display = 'block';
+                    debug.innerText = "تم جلب البيانات بنجاح.";
+                } else {
+                    resDiv.innerHTML = "<b style='color:#ef4444'>⚠️ هذا الرقم غير مسجل في النظام.</b>";
+                    resDiv.style.display = 'block';
+                    debug.innerText = "البحث انتهى: لا توجد نتائج.";
+                }
+
+            } catch (err) {
+                console.error(err);
+                resDiv.innerHTML = `<b style='color:#ef4444'>❌ عطل في الاتصال:</b><br><small>${err.message}</small>`;
+                resDiv.style.display = 'block';
+                debug.innerText = "الحالة: فشل الاتصال.";
             }
         }
     </script>
