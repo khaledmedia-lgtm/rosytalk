@@ -3,108 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cs.jo - Mawgif Portal</title>
+    <title>Cs.jo - S&B Portal</title>
     <style>
         :root { --blue: #007bff; --dark: #0f172a; --card: #1e293b; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--dark); color: white; margin: 0; padding: 15px; }
-        
-        /* شاشة الدخول */
-        #loginScreen { position: fixed; inset: 0; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
-        .logo-frame { width: 100px; height: 100px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--blue); margin-bottom: 20px; }
-        .logo-frame img { width: 85%; }
-
-        /* المحتوى */
-        .container { max-width: 480px; margin: auto; display: none; }
+        #loginScreen { position: fixed; inset: 0; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        .logo { width: 80px; height: 80px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border: 3px solid var(--blue); }
+        .container { max-width: 450px; margin: auto; display: none; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border-bottom: 3px solid var(--blue); }
-        
-        .main-box { background: var(--card); padding: 20px; border-radius: 18px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--blue); }
+        .main-box { background: var(--card); padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #020617; color: white; font-size: 16px; box-sizing: border-box; text-align: center; }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--blue); color: white; font-weight: bold; font-size: 16px; cursor: pointer; }
-
-        .result-card { background: #020617; padding: 15px; border-radius: 10px; margin-top: 15px; border-right: 5px solid var(--blue); line-height: 1.7; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--blue); color: white; font-weight: bold; cursor: pointer; }
+        .result-card { background: #020617; padding: 15px; border-radius: 10px; margin-top: 15px; border-right: 5px solid var(--blue); line-height: 1.8; }
     </style>
 </head>
 <body>
 
     <div id="loginScreen">
-        <div class="logo-frame"><img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large"></div>
-        <h2 style="color: var(--blue);">Cs.jo Secure Access</h2>
-        <input type="password" id="pin" placeholder="أدخل رمز PIN" style="width: 200px;">
-        <button onclick="checkPin()" style="width: 200px;">دخول</button>
+        <div class="logo"><img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large" width="70"></div>
+        <h2 style="color: var(--blue);">Cs.jo Access</h2>
+        <input type="password" id="pin" placeholder="رمز PIN" style="width: 200px;">
+        <button onclick="auth()" style="width: 200px;">دخول</button>
     </div>
 
     <div id="app" class="container">
         <div style="text-align: center; margin-bottom: 20px;">
-            <div class="logo-frame" style="margin: 0 auto 10px;"><img src="https://graph.facebook.com/Mawgif.Jo/picture?type=large"></div>
             <h1>Cs.jo</h1>
             <small style="color: #94a3b8;">S&B Customer Service Management</small>
         </div>
 
         <div class="stat-grid">
-            <div class="stat-card">
-                <span style="font-size: 24px; font-weight: bold; color: var(--blue);">1,998</span><br>
-                <small>إجمالي المشتركين</small>
-            </div>
-            <div class="stat-card">
-                <span id="errCount" style="font-size: 24px; font-weight: bold; color: #10b981;">0</span><br>
-                <small>بلاغات اليوم</small>
-            </div>
+            <div class="stat-card"><h3>1,998</h3><small>المشتركين</small></div>
+            <div class="stat-card"><h3>0</h3><small>البلاغات</small></div>
         </div>
 
         <div class="main-box">
-            <h3 style="margin: 0;">🔍 فحص البطاقة (MEMBERS)</h3>
-            <input id="searchKey" placeholder="ادخل رقم البطاقة (Card ID)...">
-            <button onclick="doSearch()">فحص الصلاحية</button>
-            <div id="results"></div>
-        </div>
-
-        <div class="main-box" style="border-top: 3px solid #ef4444;">
-            <h3 style="margin: 0; color: #ef4444;">🚨 بلاغ عطل Exit1 ST</h3>
-            <input id="ticket" placeholder="رقم التذكرة المتأثرة">
-            <button onclick="addLog()" style="background: #ef4444;">تسجيل عطل فوري</button>
+            <h3>🔍 فحص البطاقة (MEMBERS)</h3>
+            <input id="searchKey" placeholder="ادخل رقم البطاقة...">
+            <button onclick="search()">فحص الصلاحية</button>
+            <div id="resultArea"></div>
         </div>
     </div>
 
     <script>
-        const API_KEY = "Mawgif_Secret_2025";
-        const API_URL = "https://rosytalk1.khaled-media.workers.dev";
+        const API_URL = "https://rosytalk1.khaled-media.workers.dev/search";
+        const KEY = "Mawgif_Secret_2025";
 
-        function checkPin() {
+        function auth() {
             if(document.getElementById('pin').value === '2025') {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
-            } else { alert('خطأ في الرمز!'); }
+            } else { alert('خطأ!'); }
         }
 
-        async function doSearch() {
+        async function search() {
             const q = document.getElementById('searchKey').value;
-            const resArea = document.getElementById('results');
+            const res = document.getElementById('resultArea');
             if(!q) return;
-            resArea.innerHTML = "جاري البحث...";
+            res.innerHTML = "جاري الاتصال...";
 
             try {
-                const r = await fetch(`${API_URL}/search?q=${q}`, {
-                    headers: { "X-Custom-Auth": API_KEY }
+                const response = await fetch(`${API_URL}?q=${q}`, {
+                    headers: { "X-Custom-Auth": KEY }
                 });
-                const data = await r.json();
-                if(data.length > 0) {
+                const data = await response.json();
+                if(data && data.length > 0) {
                     const i = data[0];
-                    resArea.innerHTML = `
+                    res.innerHTML = `
                         <div class="result-card">
-                            <b style="color:var(--blue)">الموظف:</b> ${i.name}<br>
-                            <b>الشركة:</b> ${i.company_name}<br>
+                            <b>الاسم:</b> ${i.first_name} ${i.last_name}<br>
+                            <b>الشركة:</b> ${i.name}<br>
                             <b>البطاقة:</b> ${i.car_plate}<br>
-                            <b style="color:#f59e0b">تاريخ الانتهاء:</b> ${i.expiry_date || '31.12.2025'}
+                            <b style="color:#f59e0b">ينتهي في:</b> ${i.expiry_date}
                         </div>`;
-                } else { resArea.innerHTML = "⚠️ السجل غير موجود."; }
-            } catch(e) { resArea.innerHTML = "خطأ في الاتصال."; }
-        }
-
-        function addLog() {
-            document.getElementById('errCount').innerText = parseInt(document.getElementById('errCount').innerText) + 1;
-            alert('تم تسجيل البلاغ بنجاح.');
+                } else { res.innerHTML = "⚠️ السجل غير موجود."; }
+            } catch(e) { 
+                res.innerHTML = "❌ خطأ في الاتصال بالسيرفر.";
+                console.error(e);
+            }
         }
     </script>
 </body>
