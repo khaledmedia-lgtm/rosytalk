@@ -1,90 +1,158 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cs.jo Portal</title>
-    <style>
-        :root { --blue: #007bff; --bg: #0f172a; --card: #1e293b; }
-        body { font-family: sans-serif; background: var(--bg); color: white; padding: 15px; text-align: center; }
-        .main-card { background: var(--card); padding: 20px; border-radius: 20px; max-width: 400px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #334155; background: #020617; color: white; font-size: 18px; box-sizing: border-box; text-align: center; }
-        button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--blue); color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        button:active { transform: scale(0.98); opacity: 0.8; }
-        .result { margin-top: 20px; padding: 15px; border-radius: 12px; background: #020617; border-right: 5px solid var(--blue); display: none; text-align: right; }
-        .status { font-size: 12px; color: #64748b; margin-top: 10px; }
-    </style>
-</head>
-<body>
 
-    <div class="main-card">
-        <h2 style="color: var(--blue);">Cs.jo Management</h2>
-        <p>فحص صلاحية المشتركين</p>
-        
-        <input type="text" id="cardInput" placeholder="أدخل رقم البطاقة (مثلاً 7042391)">
-        <button onclick="checkCard()">فحص الآن</button>
-
-        <div id="res" class="result"></div>
-        <div id="debug" class="status">الحالة: جاهز</div>
-    </div>
-
-    <script>
-        // الرابط الخاص بك - تأكد منه 100%
-        const WORKER_URL = "https://rosytalk1.khaled-media.workers.dev/search";
-        const SECRET_KEY = "Mawgif_Secret_2025";
-
-        async function checkCard() {
-            const card = document.getElementById('cardInput').value;
-            const resDiv = document.getElementById('res');
-            const debug = document.getElementById('debug');
-
-            if(!card) { alert("يرجى إدخال رقم"); return; }
-
-            resDiv.style.display = 'none';
-            debug.innerText = "جاري الاتصال بالسيرفر...";
-
-            try {
-                const url = `${WORKER_URL}?q=${card}`;
-                console.log("Requesting:", url);
-
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'X-Custom-Auth': SECRET_KEY,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                debug.innerText = `استجابة السيرفر: ${response.status}`;
-
-                if (!response.ok) throw new Error(`سيرفر Cloudflare أعطى خطأ ${response.status}`);
-
-                const data = await response.json();
-
-                if(data && data.length > 0) {
-                    const person = data[0];
-                    resDiv.innerHTML = `
-                        <b style="color:var(--blue)">✅ البيانات موجودة:</b><br>
-                        <b>الاسم:</b> ${person.first_name} ${person.last_name}<br>
-                        <b>الشركة:</b> ${person.name}<br>
-                        <b>رقم البطاقة:</b> ${person.car_plate}<br>
-                        <b>تاريخ الانتهاء:</b> ${person.expiry_date}
-                    `;
-                    resDiv.style.display = 'block';
-                    debug.innerText = "تم جلب البيانات بنجاح.";
-                } else {
-                    resDiv.innerHTML = "<b style='color:#ef4444'>⚠️ هذا الرقم غير مسجل في النظام.</b>";
-                    resDiv.style.display = 'block';
-                    debug.innerText = "البحث انتهى: لا توجد نتائج.";
-                }
-
-            } catch (err) {
-                console.error(err);
-                resDiv.innerHTML = `<b style='color:#ef4444'>❌ عطل في الاتصال:</b><br><small>${err.message}</small>`;
-                resDiv.style.display = 'block';
-                debug.innerText = "الحالة: فشل الاتصال.";
-            }
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Membership Status Result</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "card-dark": "#1c2630",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
         }
     </script>
-</body>
-</html>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white min-h-screen flex flex-col antialiased selection:bg-primary/20">
+<!-- Top App Bar -->
+<header class="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-gray-900 dark:text-white">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold leading-tight tracking-tight">Status Result</h1>
+<div class="w-10"></div> <!-- Spacer for optical centering -->
+</header>
+<main class="flex-1 flex flex-col gap-6 p-4 max-w-md mx-auto w-full">
+<!-- Status Section -->
+<div class="flex flex-col items-center justify-center pt-4 pb-2 text-center animate-in fade-in zoom-in duration-300">
+<div class="relative mb-4">
+<div class="absolute inset-0 bg-green-500/20 rounded-full blur-xl"></div>
+<div class="relative bg-background-light dark:bg-background-dark p-2 rounded-full">
+<span class="material-symbols-outlined text-green-500 !text-[80px]" style="font-variation-settings: 'FILL' 1, 'wght' 600;">
+                        check_circle
+                    </span>
+</div>
+</div>
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Active Member</h2>
+<p class="text-xl font-medium text-green-600 dark:text-green-400 font-display">عضو نشط</p>
+<div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+                Successfully Verified
+            </div>
+</div>
+<!-- User Info Card -->
+<div class="bg-white dark:bg-card-dark rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-none overflow-hidden border border-gray-100 dark:border-gray-800">
+<!-- Profile Header with Image Background -->
+<div class="relative h-32 bg-cover bg-center" data-alt="Abstract blue gradient header background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5ukD--A0dWnAiinKdBMWWfoYrYJ0Imf_N7vZeuS_aftiEWv4P-RLFdiadhsGXluRDWSWAmm6xQ_EjZMfXYDPkkIfvSUxvfOZgsjd1H_Xcs3QLVIuj9xGcY7Qknndcmlji3OE_5KQ70Q7wI43PQmlZAhQurmFeGbCNqgzzKmuJ_4Axwu1yM1qnjeSQSD9SZfvcslwbiNkGyFo815_LF_HKNxvan_jMqOf4KvyRxa2sX8H6GW0Xw3n1yZV3sn2ftIW8P4bg5ySnBXs6');">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+<div class="flex items-center gap-3">
+<div class="h-14 w-14 rounded-full border-2 border-white shadow-md bg-gray-200 bg-cover bg-center" data-alt="Portrait of Lilian Qawas" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuArquU4cOp99srgO_058scdI4ojPDyZ9bYdZJcRSwbRdGQHDYh85tZUYJ0ko5hqcqPm2eq3AgwFmio2PVVZSKQO4uAuUcTx84WNKLoVa-LQKmmLYpcoQNP13x5qPVAoZNkwQD14WoRvpmUE3LwwFhKReXqHwt6EFT7frvBtWyiRQkqMWgwSv2E6lgShsVYrBHROQIb3RcbUJFKjcjofmkt4LRAkbL2WtWP87WZXeqqQeSWJSpehMikW9Ztb20FbJEdfEVcpPVpVkUcs');"></div>
+<div class="text-white">
+<p class="font-bold text-lg leading-tight">LILIAN QAWAS</p>
+<p class="text-xs text-gray-300 font-medium tracking-wide opacity-90">MEMBER ID: #883920</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Details List -->
+<div class="p-5 flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-3">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Full Name</p>
+<p class="text-sm font-semibold text-gray-900 dark:text-white">Lilian Qawas</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-3">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">apartment</span>
+</div>
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Company</p>
+<p class="text-sm font-semibold text-gray-900 dark:text-white">Jordan Aviation</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">event_busy</span>
+</div>
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Expiry Date</p>
+<p class="text-sm font-semibold text-gray-900 dark:text-white">2025-09-30</p>
+</div>
+</div>
+<div class="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-bold">
+                        Valid
+                    </div>
+</div>
+</div>
+</div>
+<!-- Countdown Timer -->
+<div class="space-y-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-gray-400 text-[18px]">timer</span>
+<p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time Remaining</p>
+</div>
+<div class="grid grid-cols-4 gap-3">
+<!-- Days (Highlighted) -->
+<div class="flex flex-col items-center justify-center p-3 rounded-xl bg-primary text-white shadow-lg shadow-primary/30 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-1 opacity-20">
+<span class="material-symbols-outlined text-[40px]">calendar_month</span>
+</div>
+<span class="text-2xl font-bold tracking-tight z-10">345</span>
+<span class="text-[10px] font-medium uppercase tracking-wider z-10 opacity-90">Days</span>
+</div>
+<!-- Hours -->
+<div class="flex flex-col items-center justify-center p-3 rounded-xl bg-white dark:bg-card-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+<span class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">12</span>
+<span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hours</span>
+</div>
+<!-- Minutes -->
+<div class="flex flex-col items-center justify-center p-3 rounded-xl bg-white dark:bg-card-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+<span class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">45</span>
+<span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Mins</span>
+</div>
+<!-- Seconds -->
+<div class="flex flex-col items-center justify-center p-3 rounded-xl bg-white dark:bg-card-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+<span class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">30</span>
+<span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Secs</span>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="mt-auto pt-6">
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+                Scan Another Plate
+            </button>
+</div>
+</main>
+</body></html>
